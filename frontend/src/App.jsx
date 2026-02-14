@@ -13,9 +13,16 @@ function App() {
   const [error, setError] = useState(null);
   const [currentCity, setCurrentCity] = useState('');
 
+  // Helper to ensure valid API URL without double slashes
+  const getApiUrl = (path) => {
+    const baseUrl = import.meta.env.VITE_API_URL || '';
+    const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    return `${cleanBaseUrl}${path}`;
+  };
+
   const fetchHistory = useCallback(async () => {
     try {
-      const response = await axios.get('/api/history');
+      const response = await axios.get(getApiUrl('/api/history'));
       setHistory(response.data);
     } catch (err) {
       console.error('Failed to fetch history', err);
@@ -33,7 +40,7 @@ function App() {
     setError(null);
 
     try {
-      const response = await axios.get(`/api/weather/${city}`);
+      const response = await axios.get(getApiUrl(`/api/weather/${city}`));
       setWeather(response.data);
       setCurrentCity(city);
       fetchHistory();
